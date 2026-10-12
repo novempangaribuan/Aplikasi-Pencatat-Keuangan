@@ -6,41 +6,40 @@
 <title>Pencatat Keuangan</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:20px;background:linear-gradient(135deg, #f0fdf4 0%, #f3e8ff 100%);color:#1f2937;font-family:Inter,Arial,sans-serif;min-height:100vh}
+body{margin:0;padding:20px;background:linear-gradient(135deg, #064e3b 0%, #3b0764 50%, #581c87 100%);color:#f3f4f6;font-family:Inter,Arial,sans-serif;min-height:100vh}
 main{max-width:760px;margin:auto}
-.card{background:white;padding:24px;border:1px solid #e9d5ff;border-radius:18px;margin-bottom:18px;box-shadow:0 10px 25px -5px rgba(147, 51, 234, 0.05)}
-h1{font-size:28px;margin:0 0 6px;color:#581c87}
-h2{font-size:19px;color:#6b21a8}
-.sub{color:#6b7280;font-size:14px;line-height:1.5;margin-bottom:16px}
-label{display:block;font-weight:600;font-size:14px;margin:14px 0 7px;color:#374151}
-input,select{width:100%;padding:12px;border:1px solid #d8b4fe;border-radius:10px;font-size:15px;background:#faf5ff;color:#1f2937;outline:none;transition:all 0.2s}
-input:focus,select:focus{border-color:#9333ea;box-shadow:0 0 0 3px rgba(147, 51, 234, 0.15)}
+.card{background:rgba(15, 23, 42, 0.45);backdrop-filter: blur(12px);padding:24px;border:1px solid rgba(216, 180, 254, 0.25);border-radius:18px;margin-bottom:18px;box-shadow:0 10px 30px -5px rgba(0, 0, 0, 0.4)}
+h1{font-size:28px;margin:0 0 6px;color:#f3e8ff}
+h2{font-size:19px;color:#f3e8ff}
+.sub{color:#d1d5db;font-size:14px;line-height:1.5;margin-bottom:16px}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 7px;color:#e9d5ff}
+input,select{width:100%;padding:12px;border:1px solid rgba(216, 180, 254, 0.4);border-radius:10px;font-size:15px;background:rgba(30, 27, 75, 0.7);color:#ffffff;outline:none;transition:all 0.2s}
+input::placeholder, select::placeholder{color:#9ca3af}
+input:focus,select:focus{border-color:#c084fc;box-shadow:0 0 0 3px rgba(192, 132, 252, 0.25)}
 button{padding:12px 16px;border:0;border-radius:10px;background:linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);color:white;font-weight:600;cursor:pointer;transition:all 0.2s}
 button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .btn-success{background:linear-gradient(135deg, #10b981 0%, #059669 100%)}
 .btn-danger{background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%)}
-.btn-secondary{background:linear-gradient(135deg, #6b7280 0%, #4b5563 100%)}
+.btn-secondary{background:linear-gradient(135deg, #4b5563 0%, #374151 100%)}
 .submit{width:100%;margin-top:18px}
-/* Ticker di bagian atas dan dipercepat */
-.ticker{overflow:hidden;background:linear-gradient(135deg, #065f46 0%, #3b0764 100%);color:white;padding:12px 0;border-radius:12px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.ticker{overflow:hidden;background:rgba(2, 44, 34, 0.85);color:#e9d5ff;padding:12px 0;border-radius:12px;margin-bottom:20px;border:1px solid rgba(16, 185, 129, 0.4);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
 .track{display:flex;width:max-content;animation:jalan 12s linear infinite}
 .track span{white-space:nowrap;padding:0 28px;font-size:14px;font-weight:500}
 .ticker:hover .track{animation-play-state:paused}
 @keyframes jalan{to{transform:translateX(-50%)}}
-.summary{background:#f3e8ff;border-radius:12px;padding:16px;margin:18px 0;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid #d8b4fe}
-.summary strong{font-size:20px;color:#7e22ce}
+.summary{background:rgba(59, 7, 100, 0.5);border-radius:12px;padding:16px;margin:18px 0;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid rgba(216, 180, 254, 0.3)}
+.summary strong{font-size:20px;color:#c084fc}
 .history-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
-.daily{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #f3f4f6}
-.note{font-size:12px;color:#6b7280;line-height:1.5}
-.danger{display:none !important} /* Sembunyikan tombol hapus semua */
+.daily{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1)}
+.note{font-size:12px;color:#9ca3af;line-height:1.5}
+.danger{display:none !important}
 .action-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-/* Modal Select / Edit */
-.modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:15px}
-.modal-content{background:white;padding:24px;border-radius:16px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.2)}
+.modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;padding:15px}
+.modal-content{background:#1e1b4b;border:1px solid #7e22ce;padding:24px;border-radius:16px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.5);color:#f3f4f6}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
-.modal-header h3{margin:0;color:#581c87}
-.close-modal{background:none;color:#6b7280;font-size:22px;padding:0;cursor:pointer}
-.item-pilih{display:flex;align-items:center;justify-content:between;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;font-size:14px}
+.modal-header h3{margin:0;color:#e9d5ff}
+.close-modal{background:none;color:#9ca3af;font-size:22px;padding:0;cursor:pointer}
+.item-pilih{display:flex;align-items:center;justify-content:between;gap:10px;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;margin-bottom:8px;font-size:14px;background:rgba(255,255,255,0.03)}
 @media(max-width:520px){body{padding:12px}.card{padding:18px}.history-controls{grid-template-columns:1fr}.history-controls button{width:100%}}
 </style>
 </head>
@@ -48,9 +47,8 @@ button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 <main>
 <section class="card">
 <h1>Catatan Pengeluaran</h1>
-<p class="sub">Catat dan pantau pengeluaran harianmu dengan nuansa hijau & ungu.</p>
+<p class="sub">Catat dan pantau pengeluaran harianmu dengan latar belakang warna yang dinamis.</p>
 
-<!-- Ticker pindah ke atas form -->
 <div class="ticker">
 <div class="track" id="track">
 <span>Belum ada pengeluaran.</span>
@@ -65,7 +63,6 @@ button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 <input type="text" id="nama" placeholder="Contoh: Makan Siang" maxlength="120" required>
 
 <label for="biaya">Biaya Pengeluaran (Rp)</label>
-<!-- Diubah dari tipe number ke text agar format titik pemisah ribuan bisa tampil dinamis -->
 <input type="text" id="biaya" placeholder="Contoh: 25.000" required>
 
 <button class="submit btn-success" type="submit">Simpan Pengeluaran</button>
@@ -94,7 +91,7 @@ button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 <div id="ringkasan">Belum ada pengeluaran.</div>
 
 <div class="action-group">
-<button id="btnHapusHariIni" class="btn-danger" type="button">Hapus Data Hari Ini</button>
+<button id="btnHapusHariIni" class="btn-danger" type="button">Hapus Data Tanggal Dipilih</button>
 <button id="btnPilihHapus" class="btn-secondary" type="button">Kelola / Pilih Data untuk Dihapus</button>
 </div>
 
@@ -103,7 +100,6 @@ button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 </section>
 </main>
 
-<!-- Modal Kelola & Hapus Data Selektif -->
 <div id="modalKelola" class="modal">
 <div class="modal-content">
 <div class="modal-header">
@@ -129,11 +125,10 @@ function hariIni(){
 }
 el("tanggal").value = hariIni();
 
-// Format otomatis input ribuan dengan titik
 el("biaya").addEventListener("input", function(e){
-  let val = this.value.replace(/[^0-9]/g, ""); // Hanya ambil angka
+  let val = this.value.replace(/[^0-9]/g, "");
   if(val){
-    val = Number(val).toLocaleString("id-ID"); // Format dengan titik
+    val = Number(val).toLocaleString("id-ID");
   }
   this.value = val;
 });
@@ -170,7 +165,6 @@ function aman(s){
 function render(){
   const data = ambilData().sort((a,b)=>b.waktu-a.waktu);
 
-  // Ticker berjalan lebih cepat (5 transaksi terbaru)
   const terbaru = data.slice(0,5);
   const isi = terbaru.length
     ? terbaru.map(x=>`<span>● ${aman(formatTanggal(x.tanggal))} — ${aman(x.nama)}: ${rupiah(x.biaya)}</span>`).join("")
@@ -178,12 +172,10 @@ function render(){
 
   el("track").innerHTML = isi + (terbaru.length ? isi : "");
 
-  // Total seluruh transaksi
   el("total").textContent = rupiah(
     data.reduce((s,x)=>s+Number(x.biaya),0)
   );
 
-  // Rekap berdasarkan tanggal
   const rekap = {};
   data.forEach(x=>{
     if(!rekap[x.tanggal]) rekap[x.tanggal]={total:0,jumlah:0};
@@ -214,19 +206,17 @@ function render(){
   el("ringkasan").innerHTML = tanggal.map(t=>
     `<div class="daily">
       <span>${aman(formatTanggal(t))}
-      <small>(${rekap[t].jumlah} transaksi)</small></span>
-      <strong>${rupiah(rekap[t].total)}</strong>
+      <small style="color:#d1d5db;">(${rekap[t].jumlah} transaksi)</small></span>
+      <strong style="color:#e9d5ff;">${rupiah(rekap[t].total)}</strong>
     </div>`
   ).join("");
 }
 
-// Simpan transaksi
 el("form").addEventListener("submit",function(e){
   e.preventDefault();
 
   const tanggal = el("tanggal").value;
   const nama = el("nama").value.trim();
-  // Bersihkan titik sebelum disimpan ke localStorage agar jadi angka murni
   const biaya = Number(el("biaya").value.replace(/\./g, ""));
 
   if(!tanggal || !nama || !Number.isFinite(biaya) || biaya<=0){
@@ -255,7 +245,6 @@ el("form").addEventListener("submit",function(e){
   render();
 });
 
-// Buka rincian di tab baru
 el("bukaRiwayat").addEventListener("click",function(){
   const tanggal = el("pilihTanggal").value;
 
@@ -313,24 +302,24 @@ el("bukaRiwayat").addEventListener("click",function(){
   tab.focus();
 });
 
-// Hapus khusus data hari ini
+// Hapus data berdasarkan tanggal yang sedang dipilih pada dropdown riwayat
 el("btnHapusHariIni").addEventListener("click", function(){
-  const tHariIni = hariIni();
-  const data = ambilData();
-  const sisaData = data.filter(x => x.tanggal !== tHariIni);
+  const tanggalPilih = el("pilihTanggal").value;
 
-  if(sisaData.length === data.length){
-    alert("Tidak ada catatan pengeluaran untuk hari ini.");
+  if(!tanggalPilih){
+    alert("Silakan pilih tanggal riwayat terlebih dahulu.");
     return;
   }
 
-  if(confirm(`Yakin ingin menghapus seluruh catatan pengeluaran tanggal ${formatTanggal(tHariIni)}?`)){
+  const data = ambilData();
+  const sisaData = data.filter(x => x.tanggal !== tanggalPilih);
+
+  if(confirm(`Yakin ingin menghapus seluruh catatan pengeluaran pada tanggal ${formatTanggal(tanggalPilih)}?`)){
     localStorage.setItem(KEY, JSON.stringify(sisaData));
     render();
   }
 });
 
-// Modal Kelola & Hapus Selektif
 const modal = el("modalKelola");
 el("btnPilihHapus").addEventListener("click", function(){
   const data = ambilData().sort((a,b)=>b.waktu-a.waktu);
@@ -347,7 +336,7 @@ el("btnPilihHapus").addEventListener("click", function(){
         <input type="checkbox" value="${x.waktu}" style="width:auto;">
         <div style="flex:1;">
           <strong>${aman(x.nama)}</strong> (${rupiah(x.biaya)})<br>
-          <small style="color:#6b7280;">${formatTanggal(x.tanggal)}</small>
+          <small style="color:#9ca3af;">${formatTanggal(x.tanggal)}</small>
         </div>
       </label>
     </div>
