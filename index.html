@@ -65,7 +65,8 @@ button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 <input type="text" id="nama" placeholder="Contoh: Makan Siang" maxlength="120" required>
 
 <label for="biaya">Biaya Pengeluaran (Rp)</label>
-<input type="number" id="biaya" min="1" step="1" placeholder="Contoh: 25000" required>
+<!-- Diubah dari tipe number ke text agar format titik pemisah ribuan bisa tampil dinamis -->
+<input type="text" id="biaya" placeholder="Contoh: 25.000" required>
 
 <button class="submit btn-success" type="submit">Simpan Pengeluaran</button>
 </form>
@@ -127,6 +128,15 @@ function hariIni(){
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 el("tanggal").value = hariIni();
+
+// Format otomatis input ribuan dengan titik
+el("biaya").addEventListener("input", function(e){
+  let val = this.value.replace(/[^0-9]/g, ""); // Hanya ambil angka
+  if(val){
+    val = Number(val).toLocaleString("id-ID"); // Format dengan titik
+  }
+  this.value = val;
+});
 
 function ambilData(){
   try {
@@ -216,7 +226,8 @@ el("form").addEventListener("submit",function(e){
 
   const tanggal = el("tanggal").value;
   const nama = el("nama").value.trim();
-  const biaya = Number(el("biaya").value);
+  // Bersihkan titik sebelum disimpan ke localStorage agar jadi angka murni
+  const biaya = Number(el("biaya").value.replace(/\./g, ""));
 
   if(!tanggal || !nama || !Number.isFinite(biaya) || biaya<=0){
     alert("Isi semua kolom dengan benar.");
