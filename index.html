@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,55 +6,69 @@
 <title>Pencatat Keuangan</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:20px;background:#f4f7fb;color:#172033;font-family:Arial,sans-serif}
+body{margin:0;padding:20px;background:linear-gradient(135deg, #f0fdf4 0%, #f3e8ff 100%);color:#1f2937;font-family:Inter,Arial,sans-serif;min-height:100vh}
 main{max-width:760px;margin:auto}
-.card{background:white;padding:22px;border:1px solid #e4e7ec;border-radius:16px;margin-bottom:18px}
-h1{font-size:28px;margin:0 0 8px}
-h2{font-size:19px}
-.sub{color:#667085;font-size:14px;line-height:1.5}
-label{display:block;font-weight:bold;font-size:14px;margin:14px 0 7px}
-input,select{width:100%;padding:12px;border:1px solid #cfd5df;border-radius:9px;font-size:15px;background:white}
-button{padding:12px 16px;border:0;border-radius:9px;background:#185adb;color:white;font-weight:bold;cursor:pointer}
-button:hover{filter:brightness(.93)}
+.card{background:white;padding:24px;border:1px solid #e9d5ff;border-radius:18px;margin-bottom:18px;box-shadow:0 10px 25px -5px rgba(147, 51, 234, 0.05)}
+h1{font-size:28px;margin:0 0 6px;color:#581c87}
+h2{font-size:19px;color:#6b21a8}
+.sub{color:#6b7280;font-size:14px;line-height:1.5;margin-bottom:16px}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 7px;color:#374151}
+input,select{width:100%;padding:12px;border:1px solid #d8b4fe;border-radius:10px;font-size:15px;background:#faf5ff;color:#1f2937;outline:none;transition:all 0.2s}
+input:focus,select:focus{border-color:#9333ea;box-shadow:0 0 0 3px rgba(147, 51, 234, 0.15)}
+button{padding:12px 16px;border:0;border-radius:10px;background:linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);color:white;font-weight:600;cursor:pointer;transition:all 0.2s}
+button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-success{background:linear-gradient(135deg, #10b981 0%, #059669 100%)}
+.btn-danger{background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%)}
+.btn-secondary{background:linear-gradient(135deg, #6b7280 0%, #4b5563 100%)}
 .submit{width:100%;margin-top:18px}
-.ticker{overflow:hidden;background:#102a56;color:white;padding:14px 0;border-radius:10px;margin-top:18px}
-.track{display:flex;width:max-content;animation:jalan 25s linear infinite}
-.track span{white-space:nowrap;padding:0 28px;font-size:14px}
+/* Ticker di bagian atas dan dipercepat */
+.ticker{overflow:hidden;background:linear-gradient(135deg, #065f46 0%, #3b0764 100%);color:white;padding:12px 0;border-radius:12px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.track{display:flex;width:max-content;animation:jalan 12s linear infinite}
+.track span{white-space:nowrap;padding:0 28px;font-size:14px;font-weight:500}
 .ticker:hover .track{animation-play-state:paused}
 @keyframes jalan{to{transform:translateX(-50%)}}
-.summary{background:#eef4ff;border-radius:10px;padding:15px;margin:18px 0;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-.summary strong{font-size:20px;color:#123f9b}
+.summary{background:#f3e8ff;border-radius:12px;padding:16px;margin:18px 0;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid #d8b4fe}
+.summary strong{font-size:20px;color:#7e22ce}
 .history-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
-.daily{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #e4e7ec}
-.note{font-size:12px;color:#667085;line-height:1.5}
-.danger{background:#fff0f0;color:#b42318;margin-top:10px}
-@media(max-width:520px){body{padding:12px}.card{padding:17px}.history-controls{grid-template-columns:1fr}.history-controls button{width:100%}}
+.daily{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #f3f4f6}
+.note{font-size:12px;color:#6b7280;line-height:1.5}
+.danger{display:none !important} /* Sembunyikan tombol hapus semua */
+.action-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+/* Modal Select / Edit */
+.modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:15px}
+.modal-content{background:white;padding:24px;border-radius:16px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.2)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.modal-header h3{margin:0;color:#581c87}
+.close-modal{background:none;color:#6b7280;font-size:22px;padding:0;cursor:pointer}
+.item-pilih{display:flex;align-items:center;justify-content:between;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;font-size:14px}
+@media(max-width:520px){body{padding:12px}.card{padding:18px}.history-controls{grid-template-columns:1fr}.history-controls button{width:100%}}
 </style>
 </head>
 <body>
 <main>
 <section class="card">
 <h1>Catatan Pengeluaran</h1>
-<p class="sub">Catat dan pantau pengeluaran harianmu.</p>
+<p class="sub">Catat dan pantau pengeluaran harianmu dengan nuansa hijau & ungu.</p>
+
+<!-- Ticker pindah ke atas form -->
+<div class="ticker">
+<div class="track" id="track">
+<span>Belum ada pengeluaran.</span>
+</div>
+</div>
 
 <form id="form">
 <label for="tanggal">Tanggal</label>
 <input type="date" id="tanggal" required>
 
 <label for="nama">Nama Pengeluaran</label>
-<input type="text" id="nama" placeholder="Contoh: makan siang" maxlength="120" required>
+<input type="text" id="nama" placeholder="Contoh: Makan Siang" maxlength="120" required>
 
 <label for="biaya">Biaya Pengeluaran (Rp)</label>
 <input type="number" id="biaya" min="1" step="1" placeholder="Contoh: 25000" required>
 
-<button class="submit" type="submit">Simpan Pengeluaran</button>
+<button class="submit btn-success" type="submit">Simpan Pengeluaran</button>
 </form>
-
-<div class="ticker">
-<div class="track" id="track">
-<span>Belum ada pengeluaran.</span>
-</div>
-</div>
 </section>
 
 <section class="card">
@@ -69,7 +82,7 @@ button:hover{filter:brightness(.93)}
 <option value="">Belum ada riwayat</option>
 </select>
 </div>
-<button id="bukaRiwayat" type="button">Buka Riwayat Pengeluaran</button>
+<button id="bukaRiwayat" type="button">Buka Rincian</button>
 </div>
 
 <div class="summary">
@@ -79,10 +92,31 @@ button:hover{filter:brightness(.93)}
 
 <div id="ringkasan">Belum ada pengeluaran.</div>
 
-<p class="note">Data tersimpan di browser pada perangkat ini. Jangan menghapus data situs jika ingin mempertahankan catatan.</p>
+<div class="action-group">
+<button id="btnHapusHariIni" class="btn-danger" type="button">Hapus Data Hari Ini</button>
+<button id="btnPilihHapus" class="btn-secondary" type="button">Kelola / Pilih Data untuk Dihapus</button>
+</div>
+
+<p class="note" style="margin-top:14px;">Data tersimpan aman di browser perangkat ini.</p>
 <button id="hapus" class="danger" type="button">Hapus Semua Data</button>
 </section>
 </main>
+
+<!-- Modal Kelola & Hapus Data Selektif -->
+<div id="modalKelola" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>Pilih Data untuk Dihapus</h3>
+<button class="close-modal" id="tutupModal">&times;</button>
+</div>
+<p class="sub">Pilih item catatan pengeluaran yang ingin dihapus dari sistem:</p>
+<div id="daftarItemModal" style="margin-bottom:15px; max-height: 250px; overflow-y: auto;"></div>
+<div style="display:flex; gap:10px; justify-content:flex-end;">
+<button type="button" class="btn-secondary" id="batalModal">Batal</button>
+<button type="button" class="btn-danger" id="konfirmasiHapusPilihan">Hapus Item Terpilih</button>
+</div>
+</div>
+</div>
 
 <script>
 const KEY = "catatan_keuangan_v1";
@@ -126,7 +160,7 @@ function aman(s){
 function render(){
   const data = ambilData().sort((a,b)=>b.waktu-a.waktu);
 
-  // Tulisan berjalan: lima transaksi terbaru
+  // Ticker berjalan lebih cepat (5 transaksi terbaru)
   const terbaru = data.slice(0,5);
   const isi = terbaru.length
     ? terbaru.map(x=>`<span>● ${aman(formatTanggal(x.tanggal))} — ${aman(x.nama)}: ${rupiah(x.biaya)}</span>`).join("")
@@ -210,7 +244,7 @@ el("form").addEventListener("submit",function(e){
   render();
 });
 
-// Buka rincian di tab bernama Riwayat Pengeluaran
+// Buka rincian di tab baru
 el("bukaRiwayat").addEventListener("click",function(){
   const tanggal = el("pilihTanggal").value;
 
@@ -237,15 +271,15 @@ el("bukaRiwayat").addEventListener("click",function(){
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Riwayat Pengeluaran</title>
   <style>
-  body{font-family:Arial,sans-serif;max-width:800px;margin:25px auto;padding:0 15px;color:#172033}
-  h1{font-size:26px}
-  .total{background:#eef4ff;padding:18px;border-radius:10px;margin:20px 0}
-  .total strong{font-size:24px;color:#123f9b}
+  body{font-family:Inter,Arial,sans-serif;max-width:800px;margin:25px auto;padding:0 15px;color:#1f2937}
+  h1{font-size:26px;color:#581c87}
+  .total{background:#f3e8ff;padding:18px;border-radius:10px;margin:20px 0;border:1px solid #d8b4fe}
+  .total strong{font-size:24px;color:#7e22ce}
   table{width:100%;border-collapse:collapse}
-  th,td{padding:12px 8px;border-bottom:1px solid #ddd;text-align:left}
-  th{background:#f4f7fb}
+  th,td{padding:12px 8px;border-bottom:1px solid #e5e7eb;text-align:left}
+  th{background:#faf5ff;color:#581c87}
   .uang{text-align:right;white-space:nowrap}
-  button{background:#185adb;color:white;border:0;padding:11px 15px;border-radius:8px;cursor:pointer}
+  button{background:#9333ea;color:white;border:0;padding:11px 15px;border-radius:8px;cursor:pointer}
   @media print{button{display:none}}
   </style></head><body>
   <h1>Riwayat Pengeluaran</h1>
@@ -258,22 +292,79 @@ el("bukaRiwayat").addEventListener("click",function(){
   </body></html>`;
 
   const tab = window.open("", "Riwayat Pengeluaran");
-
   if(!tab){
     alert("Tab baru diblokir. Izinkan pop-up untuk halaman ini lalu coba lagi.");
     return;
   }
-
   tab.document.open();
   tab.document.write(halaman);
   tab.document.close();
   tab.focus();
 });
 
-// Hapus seluruh data dengan konfirmasi
-el("hapus").addEventListener("click",function(){
-  if(confirm("Yakin ingin menghapus semua catatan pengeluaran?")){
-    localStorage.removeItem(KEY);
+// Hapus khusus data hari ini
+el("btnHapusHariIni").addEventListener("click", function(){
+  const tHariIni = hariIni();
+  const data = ambilData();
+  const sisaData = data.filter(x => x.tanggal !== tHariIni);
+
+  if(sisaData.length === data.length){
+    alert("Tidak ada catatan pengeluaran untuk hari ini.");
+    return;
+  }
+
+  if(confirm(`Yakin ingin menghapus seluruh catatan pengeluaran tanggal ${formatTanggal(tHariIni)}?`)){
+    localStorage.setItem(KEY, JSON.stringify(sisaData));
+    render();
+  }
+});
+
+// Modal Kelola & Hapus Selektif
+const modal = el("modalKelola");
+el("btnPilihHapus").addEventListener("click", function(){
+  const data = ambilData().sort((a,b)=>b.waktu-a.waktu);
+  const container = el("daftarItemModal");
+  
+  if(!data.length){
+    alert("Belum ada data untuk dikelola.");
+    return;
+  }
+
+  container.innerHTML = data.map((x, idx) => `
+    <div class="item-pilih">
+      <label style="display:flex; align-items:center; gap:8px; width:100%; margin:0; cursor:pointer;">
+        <input type="checkbox" value="${x.waktu}" style="width:auto;">
+        <div style="flex:1;">
+          <strong>${aman(x.nama)}</strong> (${rupiah(x.biaya)})<br>
+          <small style="color:#6b7280;">${formatTanggal(x.tanggal)}</small>
+        </div>
+      </label>
+    </div>
+  `).join("");
+
+  modal.style.display = "flex";
+});
+
+function tutupModalFungsi(){
+  modal.style.display = "none";
+}
+
+el("tutupModal").addEventListener("click", tutupModalFungsi);
+el("batalModal").addEventListener("click", tutupModalFungsi);
+
+el("konfirmasiHapusPilihan").addEventListener("click", function(){
+  const checkboxes = document.querySelectorAll("#daftarItemModal input[type='checkbox']:checked");
+  if(!checkboxes.length){
+    alert("Pilih setidaknya satu item yang ingin dihapus.");
+    return;
+  }
+
+  if(confirm(`Yakin ingin menghapus ${checkboxes.length} item yang dipilih?`)){
+    const waktuHapus = new Set(Array.from(checkboxes).map(cb => Number(cb.value)));
+    const dataAktif = ambilData().filter(x => !waktuHapus.has(x.waktu));
+    
+    localStorage.setItem(KEY, JSON.stringify(dataAktif));
+    tutupModalFungsi();
     render();
   }
 });
