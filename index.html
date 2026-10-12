@@ -1,3 +1,4 @@
+Berikut adalah kode HTML yang telah diperbarui dengan tambahan nama hari pada setiap keterangan tanggal (misal: Senin, 12 Oktober 2026), serta tetap mempertahankan performa yang ringan (anti-lag), nuansa hijau-ungu yang kaya, format titik ribuan, dan fitur hapus tanggal terpilih.
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,10 +7,8 @@
 <title>Pencatat Keuangan</title>
 <style>
 *{box-sizing:border-box}
-/* Latar belakang warna hijau & ungu solid yang kaya tanpa efek berat */
 body{margin:0;padding:20px;background:linear-gradient(135deg, #064e3b 0%, #3b0764 50%, #581c87 100%);color:#f3f4f6;font-family:Inter,Arial,sans-serif;min-height:100vh}
 main{max-width:760px;margin:auto}
-/* Kartu menggunakan warna solid semi-gelap tanpa blur agar ringan */
 .card{background:#111827;padding:24px;border:1px solid #7e22ce;border-radius:18px;margin-bottom:18px;box-shadow:0 4px 15px rgba(0, 0, 0, 0.3)}
 h1{font-size:28px;margin:0 0 6px;color:#f3e8ff}
 h2{font-size:19px;color:#f3e8ff}
@@ -153,8 +152,10 @@ function rupiah(n){
 function formatTanggal(t){
   if(!t) return "";
   const [y,m,d] = t.split("-").map(Number);
-  return new Date(y,m-1,d).toLocaleDateString("id-ID",{
-    day:"2-digit",month:"long",year:"numeric"
+  const dateObj = new Date(y,m-1,d);
+  // Menambahkan nama hari otomatis (contoh: Senin, 12 Oktober 2026)
+  return dateObj.toLocaleDateString("id-ID",{
+    weekday:"long",day:"2-digit",month:"long",year:"numeric"
   });
 }
 
@@ -374,3 +375,4 @@ render();
 </script>
 </body>
 </html>
+
