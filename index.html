@@ -1,4 +1,3 @@
-Berikut adalah kode HTML yang telah diperbarui dengan tambahan nama hari pada setiap keterangan tanggal (misal: Senin, 12 Oktober 2026), serta tetap mempertahankan performa yang ringan (anti-lag), nuansa hijau-ungu yang kaya, format titik ribuan, dan fitur hapus tanggal terpilih.
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -22,6 +21,7 @@ button:hover{filter:brightness(1.1)}
 .btn-success{background:#059669}
 .btn-danger{background:#dc2626}
 .btn-secondary{background:#4b5563}
+.btn-warning{background:#d97706}
 .submit{width:100%;margin-top:18px}
 .ticker{overflow:hidden;background:#022c22;color:#e9d5ff;padding:12px 0;border-radius:12px;margin-bottom:20px;border:1px solid #059669}
 .track{display:flex;width:max-content;animation:jalan 15s linear infinite}
@@ -40,7 +40,7 @@ button:hover{filter:brightness(1.1)}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
 .modal-header h3{margin:0;color:#e9d5ff}
 .close-modal{background:none;color:#9ca3af;font-size:22px;padding:0;cursor:pointer}
-.item-pilih{display:flex;align-items:center;justify-content:between;gap:10px;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;margin-bottom:8px;font-size:14px;background:#1f2937}
+.item-kelola{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;margin-bottom:8px;font-size:14px;background:#1f2937}
 @media(max-width:520px){body{padding:12px}.card{padding:18px}.history-controls{grid-template-columns:1fr}.history-controls button{width:100%}}
 </style>
 </head>
@@ -93,7 +93,7 @@ button:hover{filter:brightness(1.1)}
 
 <div class="action-group">
 <button id="btnHapusHariIni" class="btn-danger" type="button">Hapus Data Tanggal Dipilih</button>
-<button id="btnPilihHapus" class="btn-secondary" type="button">Kelola / Pilih Data untuk Dihapus</button>
+<button id="btnPilihHapus" class="btn-secondary" type="button">Kelola / Edit / Hapus Data</button>
 </div>
 
 <p class="note" style="margin-top:14px;">Data tersimpan aman di browser perangkat ini.</p>
@@ -101,17 +101,20 @@ button:hover{filter:brightness(1.1)}
 </section>
 </main>
 
+<!-- Modal Kelola, Edit, dan Hapus Data -->
 <div id="modalKelola" class="modal">
 <div class="modal-content">
 <div class="modal-header">
-<h3>Pilih Data untuk Dihapus</h3>
+<h3 id="modalTitle">Kelola Data Pengeluaran</h3>
 <button class="close-modal" id="tutupModal">&times;</button>
 </div>
-<p class="sub">Pilih item catatan pengeluaran yang ingin dihapus dari sistem:</p>
-<div id="daftarItemModal" style="margin-bottom:15px; max-height: 250px; overflow-y: auto;"></div>
-<div style="display:flex; gap:10px; justify-content:flex-end;">
-<button type="button" class="btn-secondary" id="batalModal">Batal</button>
-<button type="button" class="btn-danger" id="konfirmasiHapusPilihan">Hapus Item Terpilih</button>
+<div id="modalBody">
+  <p class="sub">Pilih item catatan pengeluaran yang ingin dihapus:</p>
+  <div id="daftarItemModal" style="margin-bottom:15px; max-height: 250px; overflow-y: auto;"></div>
+  <div style="display:flex; gap:10px; justify-content:flex-end;">
+    <button type="button" class="btn-secondary" id="batalModal">Tutup</button>
+    <button type="button" class="btn-danger" id="konfirmasiHapusPilihan">Hapus Item Terpilih</button>
+  </div>
 </div>
 </div>
 </div>
@@ -153,7 +156,6 @@ function formatTanggal(t){
   if(!t) return "";
   const [y,m,d] = t.split("-").map(Number);
   const dateObj = new Date(y,m-1,d);
-  // Menambahkan nama hari otomatis (contoh: Senin, 12 Oktober 2026)
   return dateObj.toLocaleDateString("id-ID",{
     weekday:"long",day:"2-digit",month:"long",year:"numeric"
   });
@@ -322,57 +324,128 @@ el("btnHapusHariIni").addEventListener("click", function(){
   }
 });
 
+// Modal Kelola, Edit, dan Hapus Data
 const modal = el("modalKelola");
 el("btnPilihHapus").addEventListener("click", function(){
+  bukaMenuKelola();
+});
+
+function bukaMenuKelola(){
+  el("modalTitle").textContent = "Kelola Data Pengeluaran";
   const data = ambilData().sort((a,b)=>b.waktu-a.waktu);
-  const container = el("daftarItemModal");
+  const container = el("modalBody");
   
   if(!data.length){
     alert("Belum ada data untuk dikelola.");
     return;
   }
 
-  container.innerHTML = data.map((x, idx) => `
-    <div class="item-pilih">
-      <label style="display:flex; align-items:center; gap:8px; width:100%; margin:0; cursor:pointer;">
-        <input type="checkbox" value="${x.waktu}" style="width:auto;">
-        <div style="flex:1;">
-          <strong>${aman(x.nama)}</strong> (${rupiah(x.biaya)})<br>
-          <small style="color:#9ca3af;">${formatTanggal(x.tanggal)}</small>
+  container.innerHTML = `
+    <p class="sub">Pilih item untuk dihapus atau klik tombol Edit untuk mengubah isinya:</p>
+    <div style="margin-bottom:15px; max-height: 280px; overflow-y: auto;">
+      ${data.map((x) => `
+        <div class="item-kelola">
+          <div style="flex:1;">
+            <strong>${aman(x.nama)}</strong> (${rupiah(x.biaya)})<br>
+            <small style="color:#9ca3af;">${formatTanggal(x.tanggal)}</small>
+          </div>
+          <button type="button" class="btn-warning" onclick="bukaFormEdit(${x.waktu})" style="padding:6px 10px; font-size:12px;">Edit</button>
+          <input type="checkbox" value="${x.waktu}" class="pilih-hapus-cb" style="width:auto; cursor:pointer;">
         </div>
-      </label>
+      `).join("")}
     </div>
-  `).join("");
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button type="button" class="btn-secondary" id="batalModal">Tutup</button>
+      <button type="button" class="btn-danger" id="konfirmasiHapusPilihan">Hapus Item Terpilih</button>
+    </div>
+  `;
+
+  el("batalModal").addEventListener("click", tutupModalFungsi);
+  el("konfirmasiHapusPilihan").onclick = function(){
+    const checkboxes = document.querySelectorAll(".pilih-hapus-cb:checked");
+    if(!checkboxes.length){
+      alert("Pilih setidaknya satu item yang ingin dihapus melalui centang di sebelah kanan.");
+      return;
+    }
+
+    if(confirm(`Yakin ingin menghapus ${checkboxes.length} item yang dipilih?`)){
+      const waktuHapus = new Set(Array.from(checkboxes).map(cb => Number(cb.value)));
+      const dataAktif = ambilData().filter(x => !waktuHapus.has(x.waktu));
+      
+      localStorage.setItem(KEY, JSON.stringify(dataAktif));
+      tutupModalFungsi();
+      render();
+    }
+  };
 
   modal.style.display = "flex";
-});
+}
+
+// Fungsi Form Edit Data
+window.bukaFormEdit = function(waktuItem){
+  const data = ambilData();
+  const item = data.find(x => x.waktu === waktuItem);
+  if(!item) return;
+
+  el("modalTitle").textContent = "Edit Data Pengeluaran";
+  const container = el("modalBody");
+
+  container.innerHTML = `
+    <form id="formEditItem">
+      <label>Tanggal</label>
+      <input type="date" id="editTanggal" value="${item.tanggal}" required style="margin-bottom:10px;">
+
+      <label>Nama Pengeluaran</label>
+      <input type="text" id="editNama" value="${aman(item.nama)}" maxlength="120" required style="margin-bottom:10px;">
+
+      <label>Biaya Pengeluaran (Rp)</label>
+      <input type="text" id="editBiaya" value="${Number(item.biaya).toLocaleString("id-ID")}" required style="margin-bottom:15px;">
+
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button type="button" class="btn-secondary" onclick="bukaMenuKelola()">Kembali</button>
+        <button type="submit" class="btn-success">Simpan Perubahan</button>
+      </div>
+    </form>
+  `;
+
+  // Format titik otomatis pada input edit biaya
+  el("editBiaya").addEventListener("input", function(){
+    let val = this.value.replace(/[^0-9]/g, "");
+    if(val){
+      val = Number(val).toLocaleString("id-ID");
+    }
+    this.value = val;
+  });
+
+  el("formEditItem").addEventListener("submit", function(e){
+    e.preventDefault();
+    const tBaru = el("editTanggal").value;
+    const nBaru = el("editNama").value.trim();
+    const bBaru = Number(el("editBiaya").value.replace(/\./g, ""));
+
+    if(!tBaru || !nBaru || !Number.isFinite(bBaru) || bBaru<=0){
+      alert("Isi kolom dengan benar.");
+      return;
+    }
+
+    item.tanggal = tBaru;
+    item.nama = nBaru;
+    item.biaya = bBaru;
+
+    localStorage.setItem(KEY, JSON.stringify(data));
+    tutupModalFungsi();
+    render();
+    alert("Data berhasil diperbarui!");
+  });
+};
 
 function tutupModalFungsi(){
   modal.style.display = "none";
 }
 
 el("tutupModal").addEventListener("click", tutupModalFungsi);
-el("batalModal").addEventListener("click", tutupModalFungsi);
-
-el("konfirmasiHapusPilihan").addEventListener("click", function(){
-  const checkboxes = document.querySelectorAll("#daftarItemModal input[type='checkbox']:checked");
-  if(!checkboxes.length){
-    alert("Pilih setidaknya satu item yang ingin dihapus.");
-    return;
-  }
-
-  if(confirm(`Yakin ingin menghapus ${checkboxes.length} item yang dipilih?`)){
-    const waktuHapus = new Set(Array.from(checkboxes).map(cb => Number(cb.value)));
-    const dataAktif = ambilData().filter(x => !waktuHapus.has(x.waktu));
-    
-    localStorage.setItem(KEY, JSON.stringify(dataAktif));
-    tutupModalFungsi();
-    render();
-  }
-});
 
 render();
 </script>
 </body>
 </html>
-
