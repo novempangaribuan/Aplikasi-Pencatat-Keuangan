@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pencatat Keuangan</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:#f4f7fb;color:#172033;font-family:Arial,sans-serif}
+main{max-width:760px;margin:auto}
+.card{background:white;padding:22px;border:1px solid #e4e7ec;border-radius:16px;margin-bottom:18px}
+h1{font-size:28px;margin:0 0 8px}
+h2{font-size:19px}
+.sub{color:#667085;font-size:14px;line-height:1.5}
+label{display:block;font-weight:bold;font-size:14px;margin:14px 0 7px}
+input,select{width:100%;padding:12px;border:1px solid #cfd5df;border-radius:9px;font-size:15px;background:white}
+button{padding:12px 16px;border:0;border-radius:9px;background:#185adb;color:white;font-weight:bold;cursor:pointer}
+button:hover{filter:brightness(.93)}
+.submit{width:100%;margin-top:18px}
+.ticker{overflow:hidden;background:#102a56;color:white;padding:14px 0;border-radius:10px;margin-top:18px}
+.track{display:flex;width:max-content;animation:jalan 25s linear infinite}
+.track span{white-space:nowrap;padding:0 28px;font-size:14px}
+.ticker:hover .track{animation-play-state:paused}
+@keyframes jalan{to{transform:translateX(-50%)}}
+.summary{background:#eef4ff;border-radius:10px;padding:15px;margin:18px 0;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.summary strong{font-size:20px;color:#123f9b}
+.history-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.daily{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #e4e7ec}
+.note{font-size:12px;color:#667085;line-height:1.5}
+.danger{background:#fff0f0;color:#b42318;margin-top:10px}
+@media(max-width:520px){body{padding:12px}.card{padding:17px}.history-controls{grid-template-columns:1fr}.history-controls button{width:100%}}
+</style>
+</head>
+<body>
+<main>
+<section class="card">
+<h1>Catatan Pengeluaran</h1>
+<p class="sub">Catat dan pantau pengeluaran harianmu.</p>
+
+<form id="form">
+<label for="tanggal">Tanggal</label>
+<input type="date" id="tanggal" required>
+
+<label for="nama">Nama Pengeluaran</label>
+<input type="text" id="nama" placeholder="Contoh: makan siang" maxlength="120" required>
+
+<label for="biaya">Biaya Pengeluaran (Rp)</label>
+<input type="number" id="biaya" min="1" step="1" placeholder="Contoh: 25000" required>
+
+<button class="submit" type="submit">Simpan Pengeluaran</button>
+</form>
+
+<div class="ticker">
+<div class="track" id="track">
+<span>Belum ada pengeluaran.</span>
+</div>
+</div>
+</section>
+
+<section class="card">
+<h2>Riwayat Pengeluaran Harian</h2>
+<p class="sub">Pilih tanggal untuk membuka rincian pengeluaran pada tab baru.</p>
+
+<div class="history-controls">
+<div>
+<label for="pilihTanggal">Pilih tanggal riwayat</label>
+<select id="pilihTanggal">
+<option value="">Belum ada riwayat</option>
+</select>
+</div>
+<button id="bukaRiwayat" type="button">Buka Riwayat Pengeluaran</button>
+</div>
+
+<div class="summary">
+<span>Total seluruh pengeluaran</span>
+<strong id="total">Rp0</strong>
+</div>
+
+<div id="ringkasan">Belum ada pengeluaran.</div>
+
+<p class="note">Data tersimpan di browser pada perangkat ini. Jangan menghapus data situs jika ingin mempertahankan catatan.</p>
+<button id="hapus" class="danger" type="button">Hapus Semua Data</button>
+</section>
+</main>
+
+<script>
+const KEY = "catatan_keuangan_v1";
+const el = id => document.getElementById(id);
+
+function hariIni(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+el("tanggal").value = hariIni();
+
+function ambilData(){
+  try {
+    const data = JSON.parse(localStorage.getItem(KEY) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function rupiah(n){
+  return new Intl.NumberFormat("id-ID",{
+    style:"currency",currency:"IDR",maximumFractionDigits:0
+  }).format(n);
+}
+
+function formatTanggal(t){
+  if(!t) return "";
+  const [y,m,d] = t.split("-").map(Number);
+  return new Date(y,m-1,d).toLocaleDateString("id-ID",{
+    day:"2-digit",month:"long",year:"numeric"
+  });
+}
+
+function aman(s){
+  return String(s).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+function render(){
+  const data = ambilData().sort((a,b)=>b.waktu-a.waktu);
+
+  // Tulisan berjalan: lima transaksi terbaru
+  const terbaru = data.slice(0,5);
+  const isi = terbaru.length
+    ? terbaru.map(x=>`<span>● ${aman(formatTanggal(x.tanggal))} — ${aman(x.nama)}: ${rupiah(x.biaya)}</span>`).join("")
+    : "<span>Belum ada pengeluaran yang dicatat.</span>";
+
+  el("track").innerHTML = isi + (terbaru.length ? isi : "");
+
+  // Total seluruh transaksi
+  el("total").textContent = rupiah(
+    data.reduce((s,x)=>s+Number(x.biaya),0)
+  );
+
+  // Rekap berdasarkan tanggal
+  const rekap = {};
+  data.forEach(x=>{
+    if(!rekap[x.tanggal]) rekap[x.tanggal]={total:0,jumlah:0};
+    rekap[x.tanggal].total += Number(x.biaya);
+    rekap[x.tanggal].jumlah++;
+  });
+
+  const tanggal = Object.keys(rekap).sort((a,b)=>b.localeCompare(a));
+  const select = el("pilihTanggal");
+  const sebelumnya = select.value;
+  select.innerHTML = "";
+
+  if(!tanggal.length){
+    select.innerHTML = '<option value="">Belum ada riwayat</option>';
+    el("ringkasan").textContent = "Belum ada pengeluaran.";
+    return;
+  }
+
+  tanggal.forEach(t=>{
+    const option = document.createElement("option");
+    option.value = t;
+    option.textContent = formatTanggal(t)+" — "+rupiah(rekap[t].total);
+    select.appendChild(option);
+  });
+
+  if(tanggal.includes(sebelumnya)) select.value = sebelumnya;
+
+  el("ringkasan").innerHTML = tanggal.map(t=>
+    `<div class="daily">
+      <span>${aman(formatTanggal(t))}
+      <small>(${rekap[t].jumlah} transaksi)</small></span>
+      <strong>${rupiah(rekap[t].total)}</strong>
+    </div>`
+  ).join("");
+}
+
+// Simpan transaksi
+el("form").addEventListener("submit",function(e){
+  e.preventDefault();
+
+  const tanggal = el("tanggal").value;
+  const nama = el("nama").value.trim();
+  const biaya = Number(el("biaya").value);
+
+  if(!tanggal || !nama || !Number.isFinite(biaya) || biaya<=0){
+    alert("Isi semua kolom dengan benar.");
+    return;
+  }
+
+  const data = ambilData();
+  data.push({
+    tanggal: tanggal,
+    nama: nama,
+    biaya: biaya,
+    waktu: Date.now()
+  });
+
+  try {
+    localStorage.setItem(KEY,JSON.stringify(data));
+  } catch(err) {
+    alert("Data gagal disimpan. Periksa ruang penyimpanan browser.");
+    return;
+  }
+
+  el("nama").value = "";
+  el("biaya").value = "";
+  el("tanggal").value = hariIni();
+  render();
+});
+
+// Buka rincian di tab bernama Riwayat Pengeluaran
+el("bukaRiwayat").addEventListener("click",function(){
+  const tanggal = el("pilihTanggal").value;
+
+  if(!tanggal){
+    alert("Belum ada riwayat untuk dibuka.");
+    return;
+  }
+
+  const data = ambilData()
+    .filter(x=>x.tanggal===tanggal)
+    .sort((a,b)=>a.waktu-b.waktu);
+
+  const total = data.reduce((s,x)=>s+Number(x.biaya),0);
+
+  const baris = data.map((x,i)=>
+    `<tr><td>${i+1}</td>
+    <td>${aman(x.nama)}</td>
+    <td class="uang">${rupiah(x.biaya)}</td></tr>`
+  ).join("");
+
+  const halaman = `<!DOCTYPE html>
+  <html lang="id"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Riwayat Pengeluaran</title>
+  <style>
+  body{font-family:Arial,sans-serif;max-width:800px;margin:25px auto;padding:0 15px;color:#172033}
+  h1{font-size:26px}
+  .total{background:#eef4ff;padding:18px;border-radius:10px;margin:20px 0}
+  .total strong{font-size:24px;color:#123f9b}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:12px 8px;border-bottom:1px solid #ddd;text-align:left}
+  th{background:#f4f7fb}
+  .uang{text-align:right;white-space:nowrap}
+  button{background:#185adb;color:white;border:0;padding:11px 15px;border-radius:8px;cursor:pointer}
+  @media print{button{display:none}}
+  </style></head><body>
+  <h1>Riwayat Pengeluaran</h1>
+  <p>Tanggal: ${aman(formatTanggal(tanggal))}</p>
+  <div class="total">Total pengeluaran:<br><strong>${rupiah(total)}</strong><br>
+  ${data.length} transaksi</div>
+  <table><thead><tr><th>No.</th><th>Nama Pengeluaran</th><th style="text-align:right">Biaya</th></tr></thead>
+  <tbody>${baris}</tbody></table>
+  <p><button onclick="window.print()">Cetak / Simpan PDF</button></p>
+  </body></html>`;
+
+  const tab = window.open("", "Riwayat Pengeluaran");
+
+  if(!tab){
+    alert("Tab baru diblokir. Izinkan pop-up untuk halaman ini lalu coba lagi.");
+    return;
+  }
+
+  tab.document.open();
+  tab.document.write(halaman);
+  tab.document.close();
+  tab.focus();
+});
+
+// Hapus seluruh data dengan konfirmasi
+el("hapus").addEventListener("click",function(){
+  if(confirm("Yakin ingin menghapus semua catatan pengeluaran?")){
+    localStorage.removeItem(KEY);
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
